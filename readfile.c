@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 char* readFileAsString(char *fileName)
 {
@@ -46,4 +47,20 @@ char* readFileAsString(char *fileName)
 
     fclose(file);
     return fileBuffer;
+}
+
+int splitInputIntoLines (char* inputString, void lineHandler(char* line)) {
+    char *line;
+    char splitToken[] = "\n";
+    int tokenCount = 0;
+    printf ("Splitting data into tokens:\n");
+    line = strtok (inputString, splitToken);
+    while (line != NULL)
+    {
+        // printf ("tokenCount: %i\ntoken: %s\n", tokenCount, line);
+        lineHandler(line);
+        tokenCount += 1;
+        line = strtok (NULL, splitToken);
+    }
+    return tokenCount;
 }

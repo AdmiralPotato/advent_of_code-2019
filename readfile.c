@@ -44,23 +44,30 @@ char* readFileAsString(char *fileName)
         exit(3);
     }
 
-
     fclose(file);
     return fileBuffer;
 }
 
-int splitInputIntoLines (char* inputString, void lineHandler(char* line)) {
-    char *line;
-    char splitToken[] = "\n";
+char* copyString (char* inputString) {
+    char *result = (char*) malloc(sizeof(char) * strlen(inputString));
+    strcpy(result, inputString);
+    return result;
+}
+
+int splitInputIntoTokens (char* splitToken, char* inputString, void lineHandler(char* token)) {
+    char *workingString = copyString(inputString);
+    // printf ("workingString:%s\n", workingString);
     int tokenCount = 0;
-    printf ("Splitting data into tokens:\n");
-    line = strtok (inputString, splitToken);
-    while (line != NULL)
+    char *token = strtok(workingString, splitToken);
+    // printf ("Splitting data into tokens:\n");
+    while (token != NULL)
     {
-        // printf ("tokenCount: %i\ntoken: %s\n", tokenCount, line);
-        lineHandler(line);
+        // printf ("tokenCount: %i\ntoken: %s\n", tokenCount, token);
+        lineHandler(token);
         tokenCount += 1;
-        line = strtok (NULL, splitToken);
+        token = strtok (NULL, splitToken);
     }
+    free(workingString);
+    free(token);
     return tokenCount;
 }

@@ -42,7 +42,7 @@ int main () {
     printf("strlen(inputData): %lu\n", strlen(inputData));
     printf("inputData: \n----\n%s\n----\n", inputData);
 
-    splitInputIntoLines(inputData, handleLineToken);
+    splitInputIntoTokens("\n", inputData, handleLineToken);
 
     printf("totalMass: %li\n", totalMass);
     printf("fuelForModules: %li\n", fuelForModules);

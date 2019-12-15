@@ -4,4 +4,6 @@
 
 char* readFileAsString(char *fileName);
 
-int splitInputIntoLines (char* inputString, void lineHandler(char* line));
+char* copyString(char* inputString);
+
+int splitInputIntoTokens (char* splitToken, char* inputString, void lineHandler(char* token));

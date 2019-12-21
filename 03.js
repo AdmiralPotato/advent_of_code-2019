@@ -1,5 +1,5 @@
 const fs = require('fs')
-const dataPath = './03-input-test.txt'
+const dataPath = './03-input.txt'
 let input = fs.readFileSync(dataPath, 'utf8')
 const lines = input.split('\n')
 
@@ -21,12 +21,9 @@ const characterMap = {
 	L: '-',
 	R: '-',
 }
-let shortestManhattan = {
-	x: Infinity,
-	y: Infinity,
-	distance: Infinity
-}
-const parseLine = (map, line) => {
+const parseLine = (line) => {
+	let map = {}
+	let steps = []
 	x = 0;
 	y = 0;
 	map['0,0'] = {
@@ -51,6 +48,7 @@ const parseLine = (map, line) => {
 		for (let i = 0; i < distance; i++) {
 			directionMap[direction](1)
 			const address = `${x},${y}`
+			steps.push(address)
 			if(map[address]) {
 				map[address].char = '+'
 			} else {
@@ -66,29 +64,49 @@ const parseLine = (map, line) => {
 		xMax = Math.max(x, xMax)
 		yMax = Math.max(y, yMax)
 	})
-	return map
+	return {
+		map,
+		steps
+	}
 }
 const jsonClone = (input) => {
 	return JSON.parse(JSON.stringify(input))
 }
-const intersectLines = (a, b) => {
-	let result = jsonClone(b)
-	delete result['0,0']
-	Object.keys(a).forEach((address) => {
-		let item = a[address]
-		if (result[address]) {
-			result[address].char = 'X'
+let shortest = {
+	xManhattan: Infinity,
+	yManhattan: Infinity,
+	manhattan: Infinity,
+	aLength: Infinity,
+	bLength: Infinity,
+	lineTotalLength: Infinity
+}
+const intersectLineMaps = (a, b) => {
+	let resultMap = jsonClone(b.map)
+	delete resultMap['0,0']
+	Object.keys(a.map).forEach((address) => {
+		let item = a.map[address]
+		if (resultMap[address]) {
+			resultMap[address].char = 'X'
 			const manhattanDistance = Math.abs(item.x) + Math.abs(item.y)
-			if(manhattanDistance < shortestManhattan.distance) {
-				shortestManhattan.x = item.x
-				shortestManhattan.y = item.y
-				shortestManhattan.distance = manhattanDistance
+			const aLength = a.steps.indexOf(address) + 1;
+			const bLength = b.steps.indexOf(address) + 1;
+			const lineTotalLength = aLength + bLength
+			if (lineTotalLength < shortest.lineTotalLength) {
+				shortest.address = address
+				shortest.aLength = aLength
+				shortest.bLength = bLength
+				shortest.lineTotalLength = lineTotalLength
+			}
+			if (manhattanDistance < shortest.manhattan) {
+				shortest.xManhattan = item.x
+				shortest.yManhattan = item.y
+				shortest.manhattan = manhattanDistance
 			}
 		} else {
-			result[address] = jsonClone(item)
+			resultMap[address] = jsonClone(item)
 		}
 	})
-	return result
+	return resultMap
 }
 const renderOutput = (map) => {
 	const padding = 1;
@@ -105,18 +123,17 @@ const renderOutput = (map) => {
 		}
 		result += '\n'
 	}
-	result += `Shortest Manhattan Distance: ${shortestManhattan.distance}\n`
-	result += `At X: ${shortestManhattan.x} Y: ${shortestManhattan.y}\n`
 	console.log(result)
 }
-let mapA = parseLine({}, lines[0])
-let mapB = parseLine({}, lines[1])
-let mapC = intersectLines(mapA, mapB)
+let lineMapA = parseLine(lines[0])
+let lineMapB = parseLine(lines[1])
+let mapC = intersectLineMaps(lineMapA, lineMapB)
 console.log('Lines')
 console.log(lines)
 // console.log('Map Line 1')
-// renderOutput(mapA)
+// renderOutput(mapA.map)
 // console.log('Map Line 2')
-// renderOutput(mapB)
-console.log('Intersection Map')
-renderOutput(mapC)
+// renderOutput(mapB.map)
+// console.log('Intersection Map')
+// renderOutput(mapC)
+console.log(shortest)

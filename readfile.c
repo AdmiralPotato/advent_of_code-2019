@@ -58,14 +58,15 @@ int splitInputIntoTokens (char* splitToken, char* inputString, void lineHandler(
     char *workingString = copyString(inputString);
     // printf ("workingString:%s\n", workingString);
     int tokenCount = 0;
-    char *token = strtok(workingString, splitToken);
+    char *savePointer;
+    char *token = strtok_r(workingString, splitToken, &savePointer);
     // printf ("Splitting data into tokens:\n");
     while (token != NULL)
     {
-        // printf ("tokenCount: %i\ntoken: %s\n", tokenCount, token);
+        // printf ("tokenCount for '%p': %i\ntoken: %s\n", splitToken, tokenCount, token);
         lineHandler(token);
         tokenCount += 1;
-        token = strtok (NULL, splitToken);
+        token = strtok_r(NULL, splitToken, &savePointer);
     }
     free(workingString);
     free(token);
